@@ -1,23 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from 'react';
+import { useContactsStore } from './store';
 
 function App() {
+  const contacts = useContactsStore(s => s.contacts);
+  const addContact = useContactsStore(s => s.addContact);
+  const removeContact = useContactsStore(s => s.removeContact);
+
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+
+  const handleAdd = () => {
+    if (name.trim() === '' || phone.trim() === '') return;
+    addContact(name, phone);
+    setName('');
+    setPhone('');
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ textAlign: 'center' }}>
+      <h1>Контакты</h1>
+
+      <input
+        type="text"
+        placeholder="Имя"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Телефон"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+      />
+      <button onClick={handleAdd}>Добавить</button>
+
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {contacts.map((contact) => (
+          <li key={contact.id}>
+            {contact.name} — {contact.phone}
+            <button onClick={() => removeContact(contact.id)}>Удалить</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
